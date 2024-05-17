@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
     public GameObject Create(string name, int x, int y)
     {
         GameObject obj = Instantiate(piece, new Vector3(0, 0, -1), Quaternion.identity);
-        Movement mv = obj.GetComponent<Movement>();
+        Movement1 mv = obj.GetComponent<Movement1>();
         mv.name = name;
         mv.SetXBoard(x);
         mv.SetYBoard(y);
@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
 
     public void SetPosition(GameObject obj)
     {
-        Movement mv = obj.GetComponent<Movement>();
+        Movement1 mv = obj.GetComponent<Movement1>();
 
         positions[mv.GetXBoard(), mv.GetYBoard()] = obj;
     }

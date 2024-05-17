@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movement : MonoBehaviour
+public class Movement1 : MonoBehaviour
 {
     public GameObject manager;
     public GameObject movePlate;
