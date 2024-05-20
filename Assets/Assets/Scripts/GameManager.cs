@@ -94,6 +94,32 @@ public class GameManager : MonoBehaviour
         player1Pieces = FindObjectsOfType<DraggableItem>().Where(p => p.CompareTag("Player1Piece")).ToList();
         player2Pieces = FindObjectsOfType<DraggableItem>().Where(p => p.CompareTag("Player2Piece")).ToList();
     }
+    
+    public void PieceMoved()
+    {
+        if (currentPlayer == Player.Player1)
+        {
+            player1MovedCount++;
+        }
+        else
+        {
+            player2MovedCount++;
+        }
+
+        // Check if all pieces have been moved
+        if (player1MovedCount == player1Pieces.Count && player2MovedCount == player2Pieces.Count)
+        {
+            Player1Panel.SetActive(false);
+            Player2Panel.SetActive(false);
+            endSetupPanel.SetActive(true);
+            //ShowSetupEndPanel();
+        }
+        else
+        {
+            SwitchTurn();
+        }
+    }
+
 
     public void SwitchTurn()
     {
@@ -115,12 +141,19 @@ public class GameManager : MonoBehaviour
     {
         foreach (var piece in player1Pieces)
         {
-            piece.SetInteractable(currentPlayer == Player.Player1);
+            //piece.SetInteractable(currentPlayer == Player.Player1);
+            piece.SetInteractable(currentPlayer == Player.Player1 && !piece.CompareTag("Player1PieceNotMovable"));
         }
 
         foreach (var piece in player2Pieces)
         {
-            piece.SetInteractable(currentPlayer == Player.Player2);
+            //piece.SetInteractable(currentPlayer == Player.Player2);
+            piece.SetInteractable(currentPlayer == Player.Player2 && !piece.CompareTag("Player2PieceNotMovable"));
         }
+    }
+
+    public void CloseSetupEndPanel()
+    {
+        endSetupPanel.SetActive(false);
     }
 }
