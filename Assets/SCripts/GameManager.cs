@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject piece;
+    /*public GameObject piece;
     
     private GameObject[,] positions = new GameObject[6,6];
     private GameObject[] playerGreen = new GameObject[20];
@@ -49,5 +51,76 @@ public class GameManager : MonoBehaviour
         Movement1 mv = obj.GetComponent<Movement1>();
 
         positions[mv.GetXBoard(), mv.GetYBoard()] = obj;
+    }*/
+    
+    public static GameManager instance;
+    public GameObject Player1Panel;
+    public GameObject Player2Panel;
+    public GameObject endSetupPanel;
+
+    public enum Player { Player1, Player2 }
+    public Player currentPlayer;
+
+    public List<DraggableItem> player1Pieces;
+    public List<DraggableItem> player2Pieces;
+    
+    private int player1MovedCount = 0;
+    private int player2MovedCount = 0;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Start()
+    {
+        currentPlayer = Player.Player1;
+        Player1Panel.gameObject.SetActive(true);
+        Player2Panel.gameObject.SetActive(false);
+        InitializePieces();
+        UpdatePieceInteractivity();
+    }
+    
+    private void InitializePieces()
+    {
+        // Find and filter pieces by their tag using LINQ
+        player1Pieces = FindObjectsOfType<DraggableItem>().Where(p => p.CompareTag("Player1Piece")).ToList();
+        player2Pieces = FindObjectsOfType<DraggableItem>().Where(p => p.CompareTag("Player2Piece")).ToList();
+    }
+
+    public void SwitchTurn()
+    {
+        currentPlayer = (currentPlayer == Player.Player1) ? Player.Player2 : Player.Player1;
+        if (currentPlayer == Player.Player1)
+        {
+            Player1Panel.gameObject.SetActive(true);
+            Player2Panel.gameObject.SetActive(false);
+        }
+        else if (currentPlayer == Player.Player2)
+        {
+            Player1Panel.gameObject.SetActive(false);
+            Player2Panel.gameObject.SetActive(true);
+        }
+        UpdatePieceInteractivity();
+    }
+
+    private void UpdatePieceInteractivity()
+    {
+        foreach (var piece in player1Pieces)
+        {
+            piece.SetInteractable(currentPlayer == Player.Player1);
+        }
+
+        foreach (var piece in player2Pieces)
+        {
+            piece.SetInteractable(currentPlayer == Player.Player2);
+        }
     }
 }
