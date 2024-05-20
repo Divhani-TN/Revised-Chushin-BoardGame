@@ -5,9 +5,14 @@ using UnityEngine.SceneManagement;
 
 public class Scenemanager : MonoBehaviour
 {
+    public GameObject PauseMenu;
 
-    
-        public void LoadAI()
+    private void Update()
+    {
+
+    }
+
+    public void LoadAI()
         {
             SceneManager.LoadScene("AI");
         }
@@ -34,5 +39,18 @@ public class Scenemanager : MonoBehaviour
 
 
         }
+
+    public void Resume()
+    {
+
+        Time.timeScale = 1;
+        PauseMenu.SetActive(false);
+    }
+    public void PauseGame()
+    {
+        Time.timeScale = 0;
+        PauseMenu.SetActive(true);
+    }
 }
+
 
