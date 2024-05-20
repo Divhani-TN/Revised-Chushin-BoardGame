@@ -57,6 +57,8 @@ public class GameManager : MonoBehaviour
     public GameObject Player1Panel;
     public GameObject Player2Panel;
     public GameObject endSetupPanel;
+    public GameObject SetupPanel;
+    public GameObject MovementPanel;
 
     public enum Player { Player1, Player2 }
     public Player currentPlayer;
@@ -66,6 +68,8 @@ public class GameManager : MonoBehaviour
     
     private int player1MovedCount = 0;
     private int player2MovedCount = 0;
+    
+    public bool initialPlacementComplete = false;
 
     private void Awake()
     {
@@ -90,9 +94,17 @@ public class GameManager : MonoBehaviour
     
     private void InitializePieces()
     {
-        // Find and filter pieces by their tag using LINQ
-        player1Pieces = FindObjectsOfType<DraggableItem>().Where(p => p.CompareTag("Player1Piece")).ToList();
-        player2Pieces = FindObjectsOfType<DraggableItem>().Where(p => p.CompareTag("Player2Piece")).ToList();
+        if (!initialPlacementComplete)
+        {
+            // Find and filter pieces by their tag using LINQ
+            player1Pieces = FindObjectsOfType<DraggableItem>().Where(p => p.CompareTag("Player1Piece")).ToList();
+            player2Pieces = FindObjectsOfType<DraggableItem>().Where(p => p.CompareTag("Player2Piece")).ToList();
+        }
+        else if (initialPlacementComplete)
+        {
+            player1Pieces = FindObjectsOfType<DraggableItem>().Where(p => p.CompareTag("Player1Piece") || p.CompareTag("Player1PieceNotMovable") || p.CompareTag("Player1Token")).ToList();
+            player2Pieces = FindObjectsOfType<DraggableItem>().Where(p => p.CompareTag("Player2Piece") || p.CompareTag("Player2PieceNotMovable") || p.CompareTag("Player2Token")).ToList();
+        }
     }
     
     public void PieceMoved()
@@ -107,17 +119,19 @@ public class GameManager : MonoBehaviour
         }
 
         // Check if all pieces have been moved
-        if (player1MovedCount == player1Pieces.Count && player2MovedCount == player2Pieces.Count)
+        if (player1MovedCount == player1Pieces.Count && player2MovedCount == player2Pieces.Count && !initialPlacementComplete)
         {
+            initialPlacementComplete = true;
             Player1Panel.SetActive(false);
             Player2Panel.SetActive(false);
             endSetupPanel.SetActive(true);
+            UpdatePieceInteractivity();
             //ShowSetupEndPanel();
+            //return;
         }
-        else
-        {
-            SwitchTurn();
-        }
+        
+        SwitchTurn();
+        
     }
 
 
@@ -139,21 +153,45 @@ public class GameManager : MonoBehaviour
 
     private void UpdatePieceInteractivity()
     {
-        foreach (var piece in player1Pieces)
+        if (!initialPlacementComplete)
         {
-            //piece.SetInteractable(currentPlayer == Player.Player1);
-            piece.SetInteractable(currentPlayer == Player.Player1 && !piece.CompareTag("Player1PieceNotMovable"));
-        }
+            foreach (var piece in player1Pieces)
+            {
+                //piece.SetInteractable(currentPlayer == Player.Player1);
+                //piece.SetInteractable(currentPlayer == Player.Player1 && !piece.CompareTag("Player1PieceNotMovable"));
+                piece.SetInteractable(currentPlayer == Player.Player1 && !piece.CompareTag("Player1PieceNotMovable") && !piece.CompareTag("Player1Token"));
+            }
 
-        foreach (var piece in player2Pieces)
+            foreach (var piece in player2Pieces)
+            {
+                //piece.SetInteractable(currentPlayer == Player.Player2);
+                //piece.SetInteractable(currentPlayer == Player.Player2 && !piece.CompareTag("Player2PieceNotMovable"));
+                piece.SetInteractable(currentPlayer == Player.Player2 && !piece.CompareTag("Player2PieceNotMovable") && !piece.CompareTag("Player2Token"));
+            }
+        }
+        else if (initialPlacementComplete)
         {
-            //piece.SetInteractable(currentPlayer == Player.Player2);
-            piece.SetInteractable(currentPlayer == Player.Player2 && !piece.CompareTag("Player2PieceNotMovable"));
+            InitializePieces();
+            foreach (var piece in player1Pieces)
+            {
+                piece.SetInteractable(currentPlayer == Player.Player1);
+            }
+
+            foreach (var piece in player2Pieces)
+            {
+                piece.SetInteractable(currentPlayer == Player.Player2);
+            }
         }
     }
 
     public void CloseSetupEndPanel()
     {
         endSetupPanel.SetActive(false);
+        UpdatePieceInteractivity();
+        Player1Panel.gameObject.SetActive(false);
+        Player2Panel.gameObject.SetActive(true);
+        SetupPanel.SetActive(false);
+        MovementPanel.SetActive(true);
+        SwitchTurn();
     }
 }

@@ -11,7 +11,7 @@ public class TileNew : MonoBehaviour, IDropHandler
         DraggableItem draggableItem = dropped.GetComponent<DraggableItem>();
         //draggableItem.parentAfterDrag = transform;
             
-        if (draggableItem != null && !draggableItem.hasMoved)
+        if (draggableItem != null && (!draggableItem.hasMoved || GameManager.instance.initialPlacementComplete))
         {
             draggableItem.parentAfterDrag = transform;
         }
