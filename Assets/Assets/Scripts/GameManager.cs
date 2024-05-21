@@ -3,62 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    /*public GameObject piece;
-    
-    private GameObject[,] positions = new GameObject[6,6];
-    private GameObject[] playerGreen = new GameObject[20];
-    private GameObject[] playerBlue = new GameObject[20];
-
-    private string currentPlayer = "green";
-
-    private bool gameOver = false;
-    
-    void Start()
-    {
-        playerGreen = new GameObject[]
-        {
-            Create("green_Token", 6, 0), Create("green_Stone", 6, 1), Create("green_Stone", 5, 0)
-        };
-        playerBlue = new GameObject[]
-        {
-            Create("blue_Token", 0, 6), Create("blue_Stone", 0, 5), Create("blue_Stone", 1, 6)
-        };
-
-        for (int i = 0; i < playerGreen.Length; i++)
-        {
-            SetPosition(playerGreen[i]);
-            SetPosition(playerBlue[i]);
-        }
-        //Instantiate(piece, new Vector3(0, 0, 0), Quaternion.identity);
-    }
-
-    public GameObject Create(string name, int x, int y)
-    {
-        GameObject obj = Instantiate(piece, new Vector3(0, 0, -1), Quaternion.identity);
-        Movement1 mv = obj.GetComponent<Movement1>();
-        mv.name = name;
-        mv.SetXBoard(x);
-        mv.SetYBoard(y);
-        mv.Activate();
-        return obj;
-    }
-
-    public void SetPosition(GameObject obj)
-    {
-        Movement1 mv = obj.GetComponent<Movement1>();
-
-        positions[mv.GetXBoard(), mv.GetYBoard()] = obj;
-    }*/
-    
     public static GameManager instance;
     public GameObject Player1Panel;
     public GameObject Player2Panel;
+    
     public GameObject endSetupPanel;
     public GameObject SetupPanel;
     public GameObject MovementPanel;
+    
+    public GameObject ErrEndTurnPanel;
+    public GameObject ErrStoneMovePanel;
+    public GameObject ErrTokenMovePanel;
+    public GameObject ErrTokenPushPanel;
+    public GameObject ErrTokenMoverOverPanel;
 
     public enum Player { Player1, Player2 }
     public Player currentPlayer;
@@ -70,6 +31,13 @@ public class GameManager : MonoBehaviour
     private int player2MovedCount = 0;
     
     public bool initialPlacementComplete = false;
+    private bool pieceMoved = false;
+    
+    public Button btnEndTurn;
+    
+    public GameObject Player1WinPanel;
+    public GameObject Player2WinPanel;
+    public Button btnEndGame;
 
     private void Awake()
     {
@@ -90,6 +58,78 @@ public class GameManager : MonoBehaviour
         Player2Panel.gameObject.SetActive(false);
         InitializePieces();
         UpdatePieceInteractivity();
+    }
+    
+    public void RegisterPieceMove()
+    {
+        pieceMoved = true;
+
+        foreach (var piece in player1Pieces)
+        {
+            piece.SetInteractable(currentPlayer == Player.Player1 && !piece.CompareTag("Player1PieceNotMovable") && !piece.CompareTag("Player1Piece"));
+        }
+        foreach (var piece in player2Pieces)
+        {
+            piece.SetInteractable(currentPlayer == Player.Player2 && !piece.CompareTag("Player2PieceNotMovable") && !piece.CompareTag("Player2Piece"));
+        }
+ 
+    }
+
+    public void DisableErrPanels()
+    {
+        ErrEndTurnPanel.gameObject.SetActive(false);
+        ErrStoneMovePanel.gameObject.SetActive(false);
+        ErrTokenMovePanel.gameObject.SetActive(false);
+        ErrTokenPushPanel.gameObject.SetActive(false);
+        ErrTokenMoverOverPanel.gameObject.SetActive(false);
+    }
+
+    public void EnableStoneErr()
+    {
+        ErrStoneMovePanel.gameObject.SetActive(true);
+        ErrTokenMovePanel.gameObject.SetActive(false);
+        ErrTokenPushPanel.gameObject.SetActive(false);
+        ErrEndTurnPanel.gameObject.SetActive(false);
+        ErrTokenMoverOverPanel.gameObject.SetActive(false);
+    }
+
+    public void EnableTokenErr()
+    {
+        ErrTokenMovePanel.gameObject.SetActive(true);
+        ErrStoneMovePanel.gameObject.SetActive(false);
+        ErrTokenPushPanel.gameObject.SetActive(false);
+        ErrEndTurnPanel.gameObject.SetActive(false);
+        ErrTokenMoverOverPanel.gameObject.SetActive(false);
+    }
+
+    public void EnableTokenPushErr()
+    {
+        ErrTokenPushPanel.gameObject.SetActive(true);
+        ErrStoneMovePanel.gameObject.SetActive(false);
+        ErrTokenMovePanel.gameObject.SetActive(false);
+        ErrEndTurnPanel.gameObject.SetActive(false);
+        ErrTokenMoverOverPanel.gameObject.SetActive(false);
+    }
+
+    public void EnableTokenMoverOverErr()
+    {
+        ErrStoneMovePanel.gameObject.SetActive(true);
+        ErrTokenMovePanel.gameObject.SetActive(false);
+        ErrTokenPushPanel.gameObject.SetActive(false);
+        ErrEndTurnPanel.gameObject.SetActive(false);
+        ErrTokenMoverOverPanel.gameObject.SetActive(true);
+    }
+    
+    public void OnEndTurnButtonClicked()
+    {
+        if (pieceMoved == true)
+        {
+            SwitchTurn();
+        }
+        else
+        {
+            ErrEndTurnPanel.gameObject.SetActive(true);
+        }
     }
     
     private void InitializePieces()
@@ -118,7 +158,7 @@ public class GameManager : MonoBehaviour
             player2MovedCount++;
         }
 
-        // Check if all pieces have been moved
+        // Check if all Stones have been placed on the board
         if (player1MovedCount == player1Pieces.Count && player2MovedCount == player2Pieces.Count && !initialPlacementComplete)
         {
             initialPlacementComplete = true;
@@ -126,8 +166,6 @@ public class GameManager : MonoBehaviour
             Player2Panel.SetActive(false);
             endSetupPanel.SetActive(true);
             UpdatePieceInteractivity();
-            //ShowSetupEndPanel();
-            //return;
         }
         
         SwitchTurn();
@@ -148,6 +186,8 @@ public class GameManager : MonoBehaviour
             Player1Panel.gameObject.SetActive(false);
             Player2Panel.gameObject.SetActive(true);
         }
+        pieceMoved = false;
+        
         UpdatePieceInteractivity();
     }
 
@@ -157,15 +197,11 @@ public class GameManager : MonoBehaviour
         {
             foreach (var piece in player1Pieces)
             {
-                //piece.SetInteractable(currentPlayer == Player.Player1);
-                //piece.SetInteractable(currentPlayer == Player.Player1 && !piece.CompareTag("Player1PieceNotMovable"));
                 piece.SetInteractable(currentPlayer == Player.Player1 && !piece.CompareTag("Player1PieceNotMovable") && !piece.CompareTag("Player1Token"));
             }
 
             foreach (var piece in player2Pieces)
             {
-                //piece.SetInteractable(currentPlayer == Player.Player2);
-                //piece.SetInteractable(currentPlayer == Player.Player2 && !piece.CompareTag("Player2PieceNotMovable"));
                 piece.SetInteractable(currentPlayer == Player.Player2 && !piece.CompareTag("Player2PieceNotMovable") && !piece.CompareTag("Player2Token"));
             }
         }
@@ -188,10 +224,42 @@ public class GameManager : MonoBehaviour
     {
         endSetupPanel.SetActive(false);
         UpdatePieceInteractivity();
+        
+        btnEndTurn.gameObject.SetActive(true);
+        
         Player1Panel.gameObject.SetActive(false);
         Player2Panel.gameObject.SetActive(true);
         SetupPanel.SetActive(false);
         MovementPanel.SetActive(true);
         SwitchTurn();
+    }
+    
+    public void Player1Wins()
+    {
+        Player1WinPanel.SetActive(true);
+        DisableGameplayUI();
+        btnEndGame.gameObject.SetActive(true);
+    }
+
+    public void Player2Wins()
+    {
+        Player2WinPanel.SetActive(true);
+        DisableGameplayUI();
+        btnEndGame.gameObject.SetActive(true);
+    }
+
+    private void DisableGameplayUI()
+    {
+        foreach (var piece in player1Pieces)
+        {
+            piece.SetInteractable(false);
+        }
+
+        foreach (var piece in player2Pieces)
+        {
+            piece.SetInteractable(false);
+        }
+        
+        btnEndTurn.gameObject.SetActive(false);
     }
 }

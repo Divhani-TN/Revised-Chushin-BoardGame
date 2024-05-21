@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7450653705630649315}
   - component: {fileID: 3445666303512342359}
   - component: {fileID: -795347417022605476}
+  - component: {fileID: 215253441914446066}
   m_Layer: 7
   m_Name: Player1Piece
   m_TagString: Player1Piece
@@ -91,3 +92,15 @@ MonoBehaviour:
   image: {fileID: 3445666303512342359}
   parentBeforeDrag: {fileID: 0}
   parentAfterDrag: {fileID: 0}
+--- !u!114 &215253441914446066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3673519537891704942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1576b4521fc99594fbeb5c8d3fd0b79f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
