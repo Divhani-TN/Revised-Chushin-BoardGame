@@ -67,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ae77ed5abd9dff64e901f8b21a7a7f02, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fbe3a3180940e004cb2b67b0131d9eb0, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -92,6 +92,10 @@ MonoBehaviour:
   image: {fileID: 3445666303512342359}
   parentBeforeDrag: {fileID: 0}
   parentAfterDrag: {fileID: 0}
+  ErrEndTurnPanel: {fileID: 0}
+  ErrStoneMovePanel: {fileID: 0}
+  ErrTokenMovePanel: {fileID: 0}
+  ErrTokenPushPanel: {fileID: 0}
 --- !u!114 &215253441914446066
 MonoBehaviour:
   m_ObjectHideFlags: 0
