@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     public GameObject Player1WinPanel;
     public GameObject Player2WinPanel;
     public Button btnEndGame;
-
+    public GameObject Pause;
     private void Awake()
     {
         if (instance == null)
@@ -58,6 +58,7 @@ public class GameManager : MonoBehaviour
         Player2Panel.gameObject.SetActive(false);
         InitializePieces();
         UpdatePieceInteractivity();
+        Pause.SetActive(false);
     }
     
     public void RegisterPieceMove()
