@@ -63,7 +63,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.28627452, g: 0.54509807, b: 0.34994915, a: 0}
+  m_Color: {r: 0.5924529, g: 0.5411256, b: 0.49520117, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -116,6 +116,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a9bc1d817877e145a1594efa89a2c51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thisTileSelected: 0
 --- !u!61 &9180241149343591003
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -238,10 +239,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 8631363016870030262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 960, y: -540.00024}
+  m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &940999611331718036
 CanvasRenderer:

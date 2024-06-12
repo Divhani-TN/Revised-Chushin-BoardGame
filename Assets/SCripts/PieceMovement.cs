@@ -4,11 +4,13 @@ public class PieceMovement : MonoBehaviour
 {
     //private LayerMask pieceLayerMask;
     private GameManager gameManager;
+    private FourInARow fourInARow;
 
     private bool canTokenMove;
     private bool canStoneMove;
     private bool canTokenBePushed;
     private bool canTokenMoveOverTiles;
+    private bool canPush;
 
     private bool isRegister = false;
 
@@ -16,6 +18,7 @@ public class PieceMovement : MonoBehaviour
     {
         //pieceLayerMask = LayerMask.GetMask("Piece");
         gameManager = GameManager.instance;
+        fourInARow = FourInARow.instance;
     }
 
     private bool IsValidMove(Transform piece, Transform parentBeforeDrag, Transform parentAfterDrag)
@@ -120,6 +123,8 @@ public class PieceMovement : MonoBehaviour
 
     public bool HandleMovement(Transform piece, Transform parentBeforeDrag, Transform parentAfterDrag)
     {
+        DraggableItem draggableItem = piece.GetComponent<DraggableItem>();
+        
         //Check for valid moves depending on the piece
         if (IsValidMove(piece, parentBeforeDrag, parentAfterDrag))
         {
@@ -131,6 +136,7 @@ public class PieceMovement : MonoBehaviour
                 {
                     //Handle normal Token move if the tile it's being moved to isn't occupied
                     HandleTokenMove(piece, parentAfterDrag);
+                    draggableItem.lastPushedFromTile = null;
                     
                     //Check win condition after moving
                     if (parentAfterDrag.name == "D4")
@@ -144,6 +150,8 @@ public class PieceMovement : MonoBehaviour
                             GameManager.instance.Player2Wins();
                         }
                     }
+                    
+                    //FourInARow.instance.CheckForRow(piece, parentAfterDrag);
                 }
                 else
                 {
@@ -153,9 +161,25 @@ public class PieceMovement : MonoBehaviour
                     //Check if there is a tile and that it's not a token
                     if (nextTile != null && GetPieceAtPosition(nextTile) == null && !occupyingPiece.CompareTag("Player1Token") && !occupyingPiece.CompareTag("Player2Token"))
                     {
+                        DraggableItem occupyingDraggableItem = occupyingPiece.GetComponent<DraggableItem>();
+                        if (occupyingDraggableItem != null && nextTile == occupyingDraggableItem.lastPushedFromTile)
+                        {
+                            RevertMove(piece, parentBeforeDrag);
+                            return false;
+                        }
+                        
                         //Handle pushing a Stone with a Token
                         HandlePieceMove(occupyingPiece, nextTile);
                         HandleTokenMove(piece, parentAfterDrag);
+                        
+                        if (draggableItem != null) draggableItem.lastPushedFromTile = parentBeforeDrag;
+                        else canPush = false;
+                        
+                        if (occupyingDraggableItem != null) occupyingDraggableItem.lastPushedFromTile = parentAfterDrag;
+                        else canPush = false;
+                        
+                        gameManager.RegisterPushedPiece(draggableItem);
+                        gameManager.RegisterPushedPiece(occupyingDraggableItem);
                         
                         //Check win condition after pushing
                         if (parentAfterDrag.name == "D4")
@@ -169,6 +193,8 @@ public class PieceMovement : MonoBehaviour
                                 GameManager.instance.Player2Wins();
                             }
                         }
+                        
+                        //FourInARow.instance.CheckForRow(piece, parentAfterDrag);
                     }
                     else
                     {
@@ -187,6 +213,8 @@ public class PieceMovement : MonoBehaviour
                 {
                     //Handle normal Stone moving if the space isn't occupied
                     HandlePieceMove(piece, parentAfterDrag);
+                    draggableItem.lastPushedFromTile = null;
+                    //FourInARow.instance.CheckForRow(piece, parentAfterDrag);
                 }
                 else
                 {
@@ -195,11 +223,29 @@ public class PieceMovement : MonoBehaviour
 
                     if (nextTile != null && GetPieceAtPosition(nextTile) == null)
                     {
+                        DraggableItem occupyingDraggableItem = occupyingPiece.GetComponent<DraggableItem>();
+                        if (occupyingDraggableItem != null && nextTile == occupyingDraggableItem.lastPushedFromTile)
+                        {
+                            RevertMove(piece, parentBeforeDrag);
+                            return false;
+                        }
+                        
                         if (!occupyingPiece.CompareTag("Player1Token") && !occupyingPiece.CompareTag("Player2Token"))
                         {
                             //Handle pushing a Stone with a Stone
                             HandlePieceMove(occupyingPiece, nextTile);
                             HandlePieceMove(piece, parentAfterDrag);
+                            
+                            if (draggableItem != null) draggableItem.lastPushedFromTile = parentBeforeDrag;
+                            else canPush = false;
+                            
+                            if (occupyingDraggableItem != null) occupyingDraggableItem.lastPushedFromTile = parentAfterDrag;
+                            else canPush = false;
+                            
+                            gameManager.RegisterPushedPiece(draggableItem);
+                            gameManager.RegisterPushedPiece(occupyingDraggableItem);
+                            
+                            //FourInARow.instance.CheckForRow(piece, parentAfterDrag);
                         }
                         else 
                         {
@@ -207,8 +253,31 @@ public class PieceMovement : MonoBehaviour
                             if (canTokenBePushed)
                             {
                                 //Handle pushing a Token with a Stone
-                                HandlePieceMove(occupyingPiece, nextTile);
-                                HandleTokenMove(piece, parentAfterDrag);
+                                HandleTokenMove(occupyingPiece, nextTile);
+                                HandlePieceMove(piece, parentAfterDrag);
+
+                                if (draggableItem != null) draggableItem.lastPushedFromTile = parentBeforeDrag;
+                                else canPush = false;
+
+                                if (occupyingDraggableItem != null) occupyingDraggableItem.lastPushedFromTile = parentAfterDrag;
+                                else canPush = false;
+                                
+                                gameManager.RegisterPushedPiece(draggableItem);
+                                gameManager.RegisterPushedPiece(occupyingDraggableItem);
+                                
+                                if (nextTile.name == "D4")
+                                {
+                                    if (occupyingPiece.CompareTag("Player1Token"))
+                                    {
+                                        GameManager.instance.Player1Wins();
+                                    }
+                                    else if (occupyingPiece.CompareTag("Player2Token"))
+                                    {
+                                        GameManager.instance.Player2Wins();
+                                    }
+                                }
+                                
+                                //FourInARow.instance.CheckForRow(piece, parentAfterDrag);
                                 
                                 //Change turns if Token has been pushed by its own stone
                                 /*if ((piece.CompareTag("Player1Piece") && occupyingPiece.CompareTag("Player1Token")) || (piece.CompareTag("Player2Piece") && occupyingPiece.CompareTag("Player2Token")))
@@ -231,11 +300,13 @@ public class PieceMovement : MonoBehaviour
                     }
                 }
             }
+            fourInARow.CheckForRow(piece, parentAfterDrag);
             
             //Change turns if Token has been moved
-            if (piece.CompareTag("Player1Token") || piece.CompareTag("Player2Token"))// && !isRegister)
+            if (piece.CompareTag("Player1Token") || piece.CompareTag("Player2Token"))// && !gameManager.hasSwitchedTurn)
             {
-                gameManager.SwitchTurn();
+                //gameManager.SwitchTurn();
+                return true;
             }
             //Disable Stones from moving if Stone has pushed or been moved
             else
@@ -243,8 +314,9 @@ public class PieceMovement : MonoBehaviour
                 //isRegister = false;
                 gameManager.RegisterPieceMove();
             }
-
-            return true;
+            
+            //return true;
+            return false;
         }
         else
         {
@@ -268,6 +340,9 @@ public class PieceMovement : MonoBehaviour
             {
                 gameManager.EnableTokenMoverOverErr();
             }
+
+            if (!canPush)
+                gameManager.EnablePushErr();
             
             RevertMove(piece, parentBeforeDrag);
             return false;
@@ -292,7 +367,7 @@ public class PieceMovement : MonoBehaviour
         piece.position = parentBeforeDrag.position;
     }
 
-    private Transform GetPieceAtPosition(Transform tile)
+    public static Transform GetPieceAtPosition(Transform tile)
     {
         foreach (Transform child in tile)
         {
