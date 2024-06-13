@@ -5,6 +5,7 @@ public class PieceMovement : MonoBehaviour
     //private LayerMask pieceLayerMask;
     private GameManager gameManager;
     private FourInARow fourInARow;
+    private PanelManager panelManager;
 
     private bool canTokenMove;
     private bool canStoneMove;
@@ -17,6 +18,7 @@ public class PieceMovement : MonoBehaviour
     private void Start()
     {
         //pieceLayerMask = LayerMask.GetMask("Piece");
+        panelManager = PanelManager.instance;
         gameManager = GameManager.instance;
         fourInARow = FourInARow.instance;
     }
@@ -25,6 +27,12 @@ public class PieceMovement : MonoBehaviour
     {
         string startTile = parentBeforeDrag.name;
         string endTile = parentAfterDrag.name;
+        DraggableItem draggableItem = piece.GetComponent<DraggableItem>();
+        if (draggableItem != null && parentAfterDrag == draggableItem.lastPushedFromTile)
+        {
+            panelManager.EnableErr(5);
+            return false;
+        }
 
         //Check if piece being moved is a Token or Stone and it's validity
         if (piece.CompareTag("Player1Token") || piece.CompareTag("Player2Token"))
@@ -47,6 +55,8 @@ public class PieceMovement : MonoBehaviour
         //Check if Stone is only moving 1 tile in any direction
         canStoneMove = Mathf.Abs(startRow - endRow) <= 1 && Mathf.Abs(startCol - endCol) <= 1;
         
+        if (!canStoneMove)
+            panelManager.EnableErr(0);
         return canStoneMove;
     }
 
@@ -65,13 +75,15 @@ public class PieceMovement : MonoBehaviour
         canTokenMoveOverTiles = !IsPathBlocked(startTile, endTile);
         if (!canTokenMove)
         {
+            panelManager.EnableErr(1);
             return false;
         }
-        else
+        if (!canTokenMoveOverTiles)
         {
-            return canTokenMoveOverTiles;
+            panelManager.EnableErr(3);
         }
         
+        return canTokenMoveOverTiles;
     }
 
     private bool IsPathBlocked(string startTile, string endTile)
@@ -165,6 +177,7 @@ public class PieceMovement : MonoBehaviour
                         if (occupyingDraggableItem != null && nextTile == occupyingDraggableItem.lastPushedFromTile)
                         {
                             RevertMove(piece, parentBeforeDrag);
+                            panelManager.EnableErr(5);
                             return false;
                         }
                         
@@ -173,10 +186,10 @@ public class PieceMovement : MonoBehaviour
                         HandleTokenMove(piece, parentAfterDrag);
                         
                         if (draggableItem != null) draggableItem.lastPushedFromTile = parentBeforeDrag;
-                        else canPush = false;
+                        else panelManager.EnableErr(5); //canPush = false;
                         
                         if (occupyingDraggableItem != null) occupyingDraggableItem.lastPushedFromTile = parentAfterDrag;
-                        else canPush = false;
+                        else panelManager.EnableErr(5); //canPush = false;
                         
                         gameManager.RegisterPushedPiece(draggableItem);
                         gameManager.RegisterPushedPiece(occupyingDraggableItem);
@@ -194,7 +207,7 @@ public class PieceMovement : MonoBehaviour
                             }
                         }
                         
-                        //FourInARow.instance.CheckForRow(piece, parentAfterDrag);
+                        FourInARow.instance.CheckForRow(occupyingPiece, nextTile);
                     }
                     else
                     {
@@ -227,6 +240,7 @@ public class PieceMovement : MonoBehaviour
                         if (occupyingDraggableItem != null && nextTile == occupyingDraggableItem.lastPushedFromTile)
                         {
                             RevertMove(piece, parentBeforeDrag);
+                            panelManager.EnableErr(5);
                             return false;
                         }
                         
@@ -237,15 +251,15 @@ public class PieceMovement : MonoBehaviour
                             HandlePieceMove(piece, parentAfterDrag);
                             
                             if (draggableItem != null) draggableItem.lastPushedFromTile = parentBeforeDrag;
-                            else canPush = false;
+                            else panelManager.EnableErr(5); //canPush = false;
                             
                             if (occupyingDraggableItem != null) occupyingDraggableItem.lastPushedFromTile = parentAfterDrag;
-                            else canPush = false;
+                            else panelManager.EnableErr(5); //canPush = false;
                             
                             gameManager.RegisterPushedPiece(draggableItem);
                             gameManager.RegisterPushedPiece(occupyingDraggableItem);
                             
-                            //FourInARow.instance.CheckForRow(piece, parentAfterDrag);
+                            FourInARow.instance.CheckForRow(occupyingPiece, nextTile);
                         }
                         else 
                         {
@@ -257,10 +271,10 @@ public class PieceMovement : MonoBehaviour
                                 HandlePieceMove(piece, parentAfterDrag);
 
                                 if (draggableItem != null) draggableItem.lastPushedFromTile = parentBeforeDrag;
-                                else canPush = false;
+                                else panelManager.EnableErr(5); //canPush = false;
 
                                 if (occupyingDraggableItem != null) occupyingDraggableItem.lastPushedFromTile = parentAfterDrag;
-                                else canPush = false;
+                                else panelManager.EnableErr(5); //canPush = false;
                                 
                                 gameManager.RegisterPushedPiece(draggableItem);
                                 gameManager.RegisterPushedPiece(occupyingDraggableItem);
@@ -277,7 +291,7 @@ public class PieceMovement : MonoBehaviour
                                     }
                                 }
                                 
-                                //FourInARow.instance.CheckForRow(piece, parentAfterDrag);
+                                FourInARow.instance.CheckForRow(occupyingPiece, nextTile);
                                 
                                 //Change turns if Token has been pushed by its own stone
                                 /*if ((piece.CompareTag("Player1Piece") && occupyingPiece.CompareTag("Player1Token")) || (piece.CompareTag("Player2Piece") && occupyingPiece.CompareTag("Player2Token")))
@@ -291,6 +305,7 @@ public class PieceMovement : MonoBehaviour
                                     gameManager.RegisterPieceMove();
                                 }*/
                             }
+                            else panelManager.EnableErr(2);
                         }
                     }
                     else
@@ -321,7 +336,7 @@ public class PieceMovement : MonoBehaviour
         else
         {
             //Show movement errors
-            if (!canStoneMove)
+            /*if (!canStoneMove)
             {
                 gameManager.EnableStoneErr();
             }
@@ -342,7 +357,7 @@ public class PieceMovement : MonoBehaviour
             }
 
             if (!canPush)
-                gameManager.EnablePushErr();
+                gameManager.EnablePushErr();*/
             
             RevertMove(piece, parentBeforeDrag);
             return false;

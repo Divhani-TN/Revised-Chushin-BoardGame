@@ -71,7 +71,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             if (hasMoved) return;
         }
         
-        GameManager.instance.DisableErrPanels();
+        //GameManager.instance.DisableErrPanels();
         
         //isDragging = true;
         parentBeforeDrag = transform.parent;

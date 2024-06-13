@@ -72,6 +72,8 @@ public class FourInARow : MonoBehaviour
         {
             if (GameManager.instance.currentPlayer != GameManager.Player.Player2)
             {
+                newPiece = piece;
+                newTile = parentAfterDrag;
                 newStoneRemoval = true;
                 return;
             }

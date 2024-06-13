@@ -29,7 +29,7 @@ RectTransform:
   m_GameObject: {fileID: 3673519537891704942}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -67,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cf40d874604327848831305a25b34dd0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b4de6cd231a97f946b5e08c1a139e932, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -92,10 +92,8 @@ MonoBehaviour:
   image: {fileID: 3445666303512342359}
   parentBeforeDrag: {fileID: 0}
   parentAfterDrag: {fileID: 0}
-  ErrEndTurnPanel: {fileID: 0}
-  ErrStoneMovePanel: {fileID: 0}
-  ErrTokenMovePanel: {fileID: 0}
-  ErrTokenPushPanel: {fileID: 0}
+  lastPushedFromTile: {fileID: 0}
+  tokenMove: 0
 --- !u!114 &-1397292110608318192
 MonoBehaviour:
   m_ObjectHideFlags: 0

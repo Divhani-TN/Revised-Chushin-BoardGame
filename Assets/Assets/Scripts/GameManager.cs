@@ -14,13 +14,16 @@ public class GameManager : MonoBehaviour
     public GameObject endSetupPanel;
     public GameObject SetupPanel;
     public GameObject MovementPanel;
-    
-    public GameObject ErrEndTurnPanel;
+
+    private PanelManager panelManager;
+    /*public GameObject ErrEndTurnPanel;
     public GameObject ErrStoneMovePanel;
     public GameObject ErrTokenMovePanel;
     public GameObject ErrTokenPushPanel;
     public GameObject ErrTokenMoverOverPanel;
     public GameObject ErrCanPush;
+    public GameObject overlay;
+    private GameObject activePanel;*/
 
     public enum Player { Player1, Player2 }
     public Player currentPlayer;
@@ -28,6 +31,8 @@ public class GameManager : MonoBehaviour
     private DraggableItem draggableItem;
     public List<DraggableItem> player1Pieces;
     public List<DraggableItem> player2Pieces;
+    private int player1Count = 0;
+    private int player2Count = 0;
     public bool tokenMove;
     
     private int player1MovedCount = 0;
@@ -57,6 +62,7 @@ public class GameManager : MonoBehaviour
     public List<TileNew> boardTile = new List<TileNew>();
     public TileNew selectedTile;
     public Button btnRemoveStone;
+    private bool removePiece = false;
     public bool hasSwitchedTurn = false;
     
     private void Awake()
@@ -75,6 +81,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        panelManager = PanelManager.instance;
         draggableItem = DraggableItem.instance;
         fourInARow = FourInARow.instance;
         
@@ -102,66 +109,7 @@ public class GameManager : MonoBehaviour
         }
  
     }
-
-    public void DisableErrPanels()
-    {
-        ErrEndTurnPanel.gameObject.SetActive(false);
-        ErrStoneMovePanel.gameObject.SetActive(false);
-        ErrTokenMovePanel.gameObject.SetActive(false);
-        ErrTokenPushPanel.gameObject.SetActive(false);
-        ErrTokenMoverOverPanel.gameObject.SetActive(false);
-        ErrCanPush.gameObject.SetActive(false);
-    }
-
-    public void EnableStoneErr()
-    {
-        ErrStoneMovePanel.gameObject.SetActive(true);
-        ErrTokenMovePanel.gameObject.SetActive(false);
-        ErrTokenPushPanel.gameObject.SetActive(false);
-        ErrEndTurnPanel.gameObject.SetActive(false);
-        ErrTokenMoverOverPanel.gameObject.SetActive(false);
-        ErrCanPush.gameObject.SetActive(false);
-    }
-
-    public void EnableTokenErr()
-    {
-        ErrTokenMovePanel.gameObject.SetActive(true);
-        ErrStoneMovePanel.gameObject.SetActive(false);
-        ErrTokenPushPanel.gameObject.SetActive(false);
-        ErrEndTurnPanel.gameObject.SetActive(false);
-        ErrTokenMoverOverPanel.gameObject.SetActive(false);
-        ErrCanPush.gameObject.SetActive(false);
-    }
-
-    public void EnableTokenPushErr()
-    {
-        ErrTokenPushPanel.gameObject.SetActive(true);
-        ErrStoneMovePanel.gameObject.SetActive(false);
-        ErrTokenMovePanel.gameObject.SetActive(false);
-        ErrEndTurnPanel.gameObject.SetActive(false);
-        ErrTokenMoverOverPanel.gameObject.SetActive(false);
-        ErrCanPush.gameObject.SetActive(false);
-    }
-
-    public void EnableTokenMoverOverErr()
-    {
-        ErrStoneMovePanel.gameObject.SetActive(false);
-        ErrTokenMovePanel.gameObject.SetActive(false);
-        ErrTokenPushPanel.gameObject.SetActive(false);
-        ErrEndTurnPanel.gameObject.SetActive(false);
-        ErrTokenMoverOverPanel.gameObject.SetActive(true);
-        ErrCanPush.gameObject.SetActive(false);
-    }
     
-    public void EnablePushErr()
-    {
-        ErrStoneMovePanel.gameObject.SetActive(false);
-        ErrTokenMovePanel.gameObject.SetActive(false);
-        ErrTokenPushPanel.gameObject.SetActive(false);
-        ErrEndTurnPanel.gameObject.SetActive(false);
-        ErrTokenMoverOverPanel.gameObject.SetActive(false);
-        ErrCanPush.gameObject.SetActive(true);
-    }
     
     public void OnEndTurnButtonClicked()
     {
@@ -171,7 +119,8 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            ErrEndTurnPanel.gameObject.SetActive(true);
+            panelManager.EnableErr(4);
+            //ErrEndTurnPanel.gameObject.SetActive(true);
         }
     }
     
@@ -186,7 +135,9 @@ public class GameManager : MonoBehaviour
         else if (initialPlacementComplete)//&& !fourInARow.forcedStoneRemoval)*/
         {
             player1Pieces = FindObjectsOfType<DraggableItem>().Where(p => p.CompareTag("Player1Piece") || p.CompareTag("Player1PieceNotMovable") || p.CompareTag("Player1Token")).ToList();
+            player1Count = player1Pieces.Count - 3;
             player2Pieces = FindObjectsOfType<DraggableItem>().Where(p => p.CompareTag("Player2Piece") || p.CompareTag("Player2PieceNotMovable") || p.CompareTag("Player2Token")).ToList();
+            player2Count = player2Pieces.Count - 3;
         }
         /*else if (fourInARow.forcedStoneRemoval)
         {
@@ -207,7 +158,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Check if all Stones have been placed on the board
-        if (player1MovedCount >= (player1Pieces.Count - 3) && player2MovedCount >= (player2Pieces.Count - 3) && !initialPlacementComplete && !fourInARow.forcedStoneRemoval)
+        if (player1MovedCount >= player1Count && player2MovedCount >= player2Count && !initialPlacementComplete && !fourInARow.forcedStoneRemoval)
         {
             initialPlacementComplete = true;
             Player1Panel.SetActive(false);
@@ -282,6 +233,7 @@ public class GameManager : MonoBehaviour
                 {
                     Transform piece = selectedTile.transform.GetChild(1);
                     ReparentPiece(piece);
+                    removePiece = true;
                     DeselectAllTiles();
                     DraggableItem pieceToRemove = piece.GetComponent<DraggableItem>();
                     //InitializePieces();
@@ -295,20 +247,24 @@ public class GameManager : MonoBehaviour
                     }
                     pieceToRemove.SetInteractable(false);
                     UpdatePieceInteractivity();
+                    removePiece = false;
                     //RegisterPieceMove();
                 }
                 else
                 {
+                    panelManager.EnableErr(6);
                     Debug.Log("You cannot remove a Token");
                 }
             }
             else
             {
+                panelManager.EnableErr(7);
                 Debug.Log("Please select a tile with a Stone in it");
             }
         }
         else
         {
+            panelManager.EnableErr(8);
             Debug.Log("No tile selected");
         }
     }
@@ -331,6 +287,7 @@ public class GameManager : MonoBehaviour
         
         if (initialPlacementComplete)
         {
+            RegisterPieceMove();
             if (tokenMove)
             {
                 SwitchTurn();
@@ -339,7 +296,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                RegisterPieceMove();
+                //RegisterPieceMove();
             }
             btnEndTurn.gameObject.SetActive(true);
         }
@@ -397,6 +354,7 @@ public class GameManager : MonoBehaviour
                 hasSwitchedTurn = false;
         
             UpdatePieceInteractivity();
+            fourInARow.CheckForForcedStoneRemoval();
     }
     
     
@@ -411,7 +369,7 @@ public class GameManager : MonoBehaviour
     public void OnCloseStoneRemovalPanel()
     {
         StoneRemovalPanel.SetActive(false); // Hide the panel
-        UpdatePieceInteractivity(); // Allow the player to move a stone to inventory
+        //UpdatePieceInteractivity(); // Allow the player to move a stone to inventory
     }
 
     public void UpdatePieceInteractivity()
@@ -429,7 +387,7 @@ public class GameManager : MonoBehaviour
                 piece.SetInteractable(currentPlayer == Player.Player2 && !piece.CompareTag("Player2PieceNotMovable") && !piece.CompareTag("Player2Token"));
             }
         }
-        else if (initialPlacementComplete) //&& !fourInARow.forcedStoneRemoval)
+        else if (initialPlacementComplete && !removePiece) //&& !fourInARow.forcedStoneRemoval)
         {
             //InitializePieces();
             foreach (var piece in player1Pieces)
@@ -440,6 +398,18 @@ public class GameManager : MonoBehaviour
             foreach (var piece in player2Pieces)
             {
                 piece.SetInteractable(currentPlayer == Player.Player2);
+            }
+        }
+        else if (removePiece)
+        {
+            foreach (var piece in player1Pieces)
+            {
+                piece.SetInteractable(currentPlayer == Player.Player1 && !piece.CompareTag("Player1PieceNotMovable") && !piece.CompareTag("Player1Piece"));
+            }
+
+            foreach (var piece in player2Pieces)
+            {
+                piece.SetInteractable(currentPlayer == Player.Player2 && !piece.CompareTag("Player2PieceNotMovable") && !piece.CompareTag("Player2Piece"));
             }
         }
         /*else if (fourInARow.forcedStoneRemoval)
