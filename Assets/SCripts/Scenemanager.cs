@@ -26,8 +26,17 @@ public class Scenemanager : MonoBehaviour
         {
             SceneManager.LoadScene("Lost");
         }
+    public void LoadRules()
+    {
+        SceneManager.LoadScene("Rules");
+    }
 
-        public void LoadWin()
+    public void LoadSettings()
+    {
+        SceneManager.LoadScene("Settings");
+    }
+
+    public void LoadWin()
         {
             SceneManager.LoadScene("Win");
 
