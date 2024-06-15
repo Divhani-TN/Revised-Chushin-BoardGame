@@ -9,57 +9,63 @@ public class Scenemanager : MonoBehaviour
 
     private void Update()
     {
-
+        // Optional: Add debugging or additional functionality here
     }
 
     public void LoadAI()
-        {
-            SceneManager.LoadScene("AI");
-        }
+    {
+        LoadScene("AI");
+    }
 
-        public void LoadMenu()
-        {
-            SceneManager.LoadScene("Menu");
-        }
+    public void LoadMenu()
+    {
+        LoadScene("Menu");
+    }
 
-        public void LoadLost()
-        {
-            SceneManager.LoadScene("Lost");
-        }
+    public void LoadLost()
+    {
+        LoadScene("Lost");
+    }
+
     public void LoadRules()
     {
-        SceneManager.LoadScene("Rules");
+        LoadScene("Rules");
     }
 
     public void LoadSettings()
     {
-        SceneManager.LoadScene("Settings");
+        LoadScene("Settings");
     }
 
     public void LoadWin()
-        {
-            SceneManager.LoadScene("Win");
+    {
+        LoadScene("Win");
+    }
 
-        }
-       public void loadGame()
-        {
+    public void LoadGame()
+    {
+        LoadScene("Game");
+    }
 
-        SceneManager.LoadScene("Game");
-
-
-        }
+    private void LoadScene(string sceneName)
+    {
+        Time.timeScale = 1; // Ensure time scale is reset
+        SceneManager.LoadScene(sceneName);
+        Debug.Log($"Loading scene: {sceneName}");
+    }
 
     public void Resume()
     {
-
         Time.timeScale = 1;
         PauseMenu.SetActive(false);
+        Debug.Log("Game Resumed");
     }
+
     public void PauseGame()
     {
         Time.timeScale = 0;
         PauseMenu.SetActive(true);
+        Debug.Log("Game Paused");
     }
 }
-
 

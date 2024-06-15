@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject);
+           // Destroy(gameObject);
         }
         
         boardTile.AddRange(FindObjectsOfType<TileNew>());
@@ -93,6 +93,7 @@ public class GameManager : MonoBehaviour
         Pause.SetActive(false);
         
         StoneRemovalPanel.SetActive(false);
+        SoundManager.Instance.PlaySFX("Chushin Startup");
     }
     
     public void RegisterPieceMove()
