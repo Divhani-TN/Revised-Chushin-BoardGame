@@ -16,14 +16,6 @@ public class GameManager : MonoBehaviour
     public GameObject MovementPanel;
 
     private PanelManager panelManager;
-    /*public GameObject ErrEndTurnPanel;
-    public GameObject ErrStoneMovePanel;
-    public GameObject ErrTokenMovePanel;
-    public GameObject ErrTokenPushPanel;
-    public GameObject ErrTokenMoverOverPanel;
-    public GameObject ErrCanPush;
-    public GameObject overlay;
-    private GameObject activePanel;*/
 
     public enum Player { Player1, Player2 }
     public Player currentPlayer;
@@ -64,6 +56,8 @@ public class GameManager : MonoBehaviour
     public Button btnRemoveStone;
     private bool removePiece = false;
     public bool hasSwitchedTurn = false;
+
+    public SoundManager soundManager;
     
     private void Awake()
     {
@@ -73,7 +67,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-           // Destroy(gameObject);
+           Destroy(gameObject);
         }
         
         boardTile.AddRange(FindObjectsOfType<TileNew>());
@@ -93,7 +87,8 @@ public class GameManager : MonoBehaviour
         Pause.SetActive(false);
         
         StoneRemovalPanel.SetActive(false);
-        SoundManager.Instance.PlaySFX("Chushin Startup");
+        //SoundManager.Instance.PlaySFX("Game Start");
+        soundManager.PlaySFX("Game Start");
     }
     
     public void RegisterPieceMove()
@@ -178,7 +173,8 @@ public class GameManager : MonoBehaviour
     public void EnableRemoveStoneUI()
     {
         StoneRemovalPanel.SetActive(true);
-        btnRemoveStone.GameObject().SetActive(true);
+        //btnRemoveStone.GameObject().SetActive(true);
+        btnEndTurn.gameObject.SetActive(false);
         foreach (var piece in player1Pieces)
         {
             piece.SetInteractable(false);
@@ -240,10 +236,12 @@ public class GameManager : MonoBehaviour
                     //InitializePieces();
                     if (player1Pieces.Contains(pieceToRemove))
                     {
+                        //player1MovedCount--;
                         player1Pieces.Remove(pieceToRemove);
                     }
                     else if (player2Pieces.Contains(pieceToRemove))
                     {
+                        //player2MovedCount--;
                         player2Pieces.Remove(pieceToRemove);
                     }
                     pieceToRemove.SetInteractable(false);
@@ -303,6 +301,14 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            if (currentPlayer == Player.Player1)
+            {
+                player1MovedCount--;
+            }
+            else
+            {
+                player2MovedCount--;
+            }
             PieceMoved();
         }
         //InitializePieces();
@@ -370,6 +376,8 @@ public class GameManager : MonoBehaviour
     public void OnCloseStoneRemovalPanel()
     {
         StoneRemovalPanel.SetActive(false); // Hide the panel
+        //btnRemoveStone.GameObject().SetActive(true);
+        btnRemoveStone.gameObject.SetActive(true);
         //UpdatePieceInteractivity(); // Allow the player to move a stone to inventory
     }
 

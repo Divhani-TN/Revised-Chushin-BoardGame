@@ -381,14 +381,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.98490566, g: 0.87969464, b: 0.73403347, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 745f12fa2c221d54d84bd4d5a07d666c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: af779d70d3f44264d9813bec5dc62bd3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1280,6 +1280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _musicSlider_: {fileID: 1384772224}
   _sfxSlider_: {fileID: 996947731}
+  soundManager: {fileID: 1061285155}
 --- !u!114 &1061285155
 MonoBehaviour:
   m_ObjectHideFlags: 0

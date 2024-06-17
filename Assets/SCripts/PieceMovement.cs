@@ -15,12 +15,18 @@ public class PieceMovement : MonoBehaviour
 
     private bool isRegister = false;
 
+    public SoundManager soundManager;
+    //public GameObject soundObject;
+
     private void Start()
     {
         //pieceLayerMask = LayerMask.GetMask("Piece");
         panelManager = PanelManager.instance;
         gameManager = GameManager.instance;
         fourInARow = FourInARow.instance;
+        //GameObject soundManager = GameObject.Find("SoundManager");
+        //SoundManager soundManager = FindObjectOfType<SoundManager>();
+        //SoundManager soundManager = soundObject.GetComponent<SoundManager>();
     }
 
     private bool IsValidMove(Transform piece, Transform parentBeforeDrag, Transform parentAfterDrag)
@@ -148,6 +154,8 @@ public class PieceMovement : MonoBehaviour
                 {
                     //Handle normal Token move if the tile it's being moved to isn't occupied
                     HandleTokenMove(piece, parentAfterDrag);
+                    //SoundManager.Instance.PlaySFX("Drop Marble");
+                    soundManager.PlaySFX("Drop Marble");
                     draggableItem.lastPushedFromTile = null;
                     
                     //Check win condition after moving
@@ -183,6 +191,8 @@ public class PieceMovement : MonoBehaviour
                         
                         //Handle pushing a Stone with a Token
                         HandlePieceMove(occupyingPiece, nextTile);
+                        //SoundManager.Instance.PlaySFX("Push");
+                        soundManager.PlaySFX("Push");
                         HandleTokenMove(piece, parentAfterDrag);
                         
                         if (draggableItem != null) draggableItem.lastPushedFromTile = parentBeforeDrag;
@@ -226,6 +236,8 @@ public class PieceMovement : MonoBehaviour
                 {
                     //Handle normal Stone moving if the space isn't occupied
                     HandlePieceMove(piece, parentAfterDrag);
+                    //SoundManager.Instance.PlaySFX("Drop Marble");
+                    soundManager.PlaySFX("Drop Marble");
                     draggableItem.lastPushedFromTile = null;
                     //FourInARow.instance.CheckForRow(piece, parentAfterDrag);
                 }
@@ -248,6 +260,8 @@ public class PieceMovement : MonoBehaviour
                         {
                             //Handle pushing a Stone with a Stone
                             HandlePieceMove(occupyingPiece, nextTile);
+                            //SoundManager.Instance.PlaySFX("Push");
+                            soundManager.PlaySFX("Push");
                             HandlePieceMove(piece, parentAfterDrag);
                             
                             if (draggableItem != null) draggableItem.lastPushedFromTile = parentBeforeDrag;
@@ -268,6 +282,8 @@ public class PieceMovement : MonoBehaviour
                             {
                                 //Handle pushing a Token with a Stone
                                 HandleTokenMove(occupyingPiece, nextTile);
+                                //SoundManager.Instance.PlaySFX("Push");
+                                soundManager.PlaySFX("Push");
                                 HandlePieceMove(piece, parentAfterDrag);
 
                                 if (draggableItem != null) draggableItem.lastPushedFromTile = parentBeforeDrag;
@@ -335,30 +351,6 @@ public class PieceMovement : MonoBehaviour
         }
         else
         {
-            //Show movement errors
-            /*if (!canStoneMove)
-            {
-                gameManager.EnableStoneErr();
-            }
-
-            if (!canTokenMove)
-            {
-                gameManager.EnableTokenErr();
-            }
-
-            if (!canTokenBePushed)
-            {
-                gameManager.EnableTokenPushErr();
-            }
-
-            if (!canTokenMoveOverTiles)
-            {
-                gameManager.EnableTokenMoverOverErr();
-            }
-
-            if (!canPush)
-                gameManager.EnablePushErr();*/
-            
             RevertMove(piece, parentBeforeDrag);
             return false;
         }
@@ -379,6 +371,8 @@ public class PieceMovement : MonoBehaviour
     private void RevertMove(Transform piece, Transform parentBeforeDrag)
     {
         piece.SetParent(parentBeforeDrag);
+        //SoundManager.Instance.PlaySFX("Drop Marble");
+        soundManager.PlaySFX("Drop Marble");
         piece.position = parentBeforeDrag.position;
     }
 

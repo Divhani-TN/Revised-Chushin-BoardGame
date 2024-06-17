@@ -23,7 +23,7 @@ public class FourInARow : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -64,7 +64,7 @@ public class FourInARow : MonoBehaviour
             
             if (DetectedRow(piece, GameManager.instance.player1Pieces, parentAfterDrag))
             {
-                GameManager.instance.btnEndTurn.gameObject.SetActive(false);
+                //GameManager.instance.btnEndTurn.gameObject.SetActive(false);
                 HandleRowFormed(GameManager.Player.Player1);
             }
         }
@@ -129,12 +129,14 @@ public class FourInARow : MonoBehaviour
         if (player == GameManager.Player.Player1 && player1RemovedCount < 3)
         {
             player1RemovedCount++;
+            //GameManager.instance.btnEndTurn.gameObject.SetActive(false);
             // Force Player 1 to remove a stone
             ForceStoneRemoval(GameManager.Player.Player1);
         }
         else if (player == GameManager.Player.Player2 && player2RemovedCount < 3)
         {
             player2RemovedCount++;
+            //GameManager.instance.btnEndTurn.gameObject.SetActive(false);
             // Force Player 2 to remove a stone
             ForceStoneRemoval(GameManager.Player.Player2);
         }

@@ -5,13 +5,13 @@ using System;
 
 public class SoundManager : MonoBehaviour
 {
-    public static SoundManager Instance;
+    //public static SoundManager Instance;
     public Volume[] musicSounds, sfxSounds;
 
     public AudioSource musicSource, sfxSource;
     private static bool isInitialized = false;
 
-    private void Awake()
+    /*private void Awake()
     {
         if (isInitialized)
         {
@@ -25,10 +25,14 @@ public class SoundManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            // DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject);
             isInitialized = true;
         }
-    }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }*/
 
     private void Start()
     {
