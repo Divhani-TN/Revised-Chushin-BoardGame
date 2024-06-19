@@ -29,7 +29,7 @@ public class Scenemanager : MonoBehaviour
 
     public void LoadRules()
     {
-        LoadScene("Rules");
+        LoadScene("Tutorial");
     }
 
     public void LoadSettings()
